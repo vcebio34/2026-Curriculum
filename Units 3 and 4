@@ -1,0 +1,1032 @@
+import React, { useState, useMemo } from 'react';
+import { 
+  Dna, Microscope, Zap, ClipboardList, BookOpen, 
+  ChevronRight, ChevronLeft, Search, GraduationCap, 
+  Layers, CheckCircle2, Info, FlaskConical, Atom, Brain, 
+  Activity, Shield, Sprout, Footprints
+} from 'lucide-react';
+
+const SESSIONS_DATA = {
+  // UNIT 3 AOS 1: THE MOLECULAR BASIS OF LIFE
+  1: {
+    title: "Nucleic Acids: DNA & RNA",
+    aos: "Unit 3 AOS 1",
+    jacarandaDeepDive: "Chapter 1: Chemical structure of nucleic acids.",
+    glossary: [
+      { term: "Nucleotide", def: "Monomer consisting of a pentose sugar, phosphate group, and nitrogenous base." },
+      { term: "Phosphodiester Bond", def: "Covalent bond between the 3' OH of one sugar and 5' phosphate of the next." },
+      { term: "Antiparallel", def: "Strands run in opposite directions (5' to 3' vs 3' to 5')." },
+      { term: "Genome", def: "The complete set of genetic information in an organism." },
+      { term: "Hydrogen Bond", def: "Weak attraction holding complementary bases together." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "Chemical Anatomy", 
+        details: [
+          "DNA Nucleotide: Deoxyribose sugar (H at 2' carbon), Phosphate (negative charge), Base (A, T, C, G).",
+          "RNA Nucleotide: Ribose sugar (OH at 2' carbon - less stable), Phosphate, Base (A, U, C, G).",
+          "Backbone Formation: Condensation polymerisation connects nucleotides via phosphodiester bonds, releasing water."
+        ] 
+      },
+      {
+        subhead: "The 3 Types of RNA",
+        details: [
+          "mRNA: Single-stranded, carries codons from nucleus to ribosome. Has 5' Cap and 3' Poly-A tail.",
+          "tRNA: Clover-leaf shape (H-bonds). Carries specific amino acid at 3' end; Anticodon at opposite loop matches mRNA.",
+          "rRNA: Structural/catalytic component of ribosomes (60S/40S subunits in eukaryotes). acts as a ribozyme."
+        ]
+      }
+    ],
+    vceWebTricks: [
+      "A-T pairs = 2 H-bonds; G-C pairs = 3 H-bonds (higher melting temp).",
+      "5' end = Phosphate; 3' end = Hydroxyl (OH).",
+      "Uracil is a pyrimidine (single ring) that replaces Thymine."
+    ],
+    questions: [
+      { q: "Contrast the sugar component of DNA and RNA. [2 marks]", hint: "DNA: Deoxyribose; RNA: Ribose (has extra OH group)." },
+      { q: "Explain why DNA strands are 'antiparallel'. [2 marks]", hint: "One runs 5'-3', the other 3'-5'; vital for replication enzymes." },
+      { q: "Identify the bond between complementary bases. [1 mark]", hint: "Hydrogen bond." },
+      { q: "Describe the function of tRNA. [2 marks]", hint: "Transports specific amino acids to ribosome; matches anticodon to codon." },
+      { q: "Why is G-C rich DNA harder to denature? [2 marks]", hint: "3 H-bonds vs 2 H-bonds requires more energy to break." }
+    ]
+  },
+  2: {
+    title: "Protein Structure & Proteome",
+    aos: "Unit 3 AOS 1",
+    jacarandaDeepDive: "Chapter 2: From amino acid to functional protein.",
+    glossary: [
+      { term: "Proteome", def: "Entire set of proteins expressed by a genome." },
+      { term: "R-Group", def: "Variable side chain determining amino acid properties." },
+      { term: "Peptide Bond", def: "Covalent bond between amino acids." },
+      { term: "Denaturation", def: "Loss of 3D structure and function." },
+      { term: "Chaperone", def: "Protein assisting folding of other proteins." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "Folding Hierarchy", 
+        details: [
+          "Primary: Linear sequence of amino acids (peptide bonds). Determines all future folding.",
+          "Secondary: Alpha-helices/Beta-sheets stabilized by H-bonds in the backbone.",
+          "Tertiary: Final 3D shape stabilized by R-group interactions (disulfide, ionic, hydrophobic).",
+          "Quaternary: Assembly of multiple polypeptide chains (e.g. Haemoglobin)."
+        ] 
+      }
+    ],
+    vceWebTricks: [
+      "Proteome > Genome due to alternative splicing.",
+      "Denaturation breaks tertiary/secondary bonds, NOT peptide bonds.",
+      "Function depends entirely on 3D shape (conformational shape)."
+    ],
+    questions: [
+      { q: "Define 'Proteome'. [1 mark]", hint: "All proteins expressed by a cell/organism at a given time." },
+      { q: "What bonds stabilize secondary structure? [1 mark]", hint: "Hydrogen bonds." },
+      { q: "Explain the consequence of a mutation in the primary sequence. [3 marks]", hint: "Change in AA -> change in R-group interactions -> altered 3D shape -> loss of function." },
+      { q: "Distinguish between fibrous and globular proteins. [2 marks]", hint: "Fibrous: structural/insoluble; Globular: functional/soluble." },
+      { q: "List three types of bonds in tertiary structure. [3 marks]", hint: "Disulfide bridges, Ionic bonds, Hydrophobic interactions." }
+    ]
+  },
+  3: {
+    title: "Gene Structure (Euk vs Prok)",
+    aos: "Unit 3 AOS 1",
+    jacarandaDeepDive: "Chapter 3: Gene anatomy.",
+    glossary: [
+      { term: "Exon", def: "Coding region of a gene." },
+      { term: "Intron", def: "Non-coding region removed during splicing." },
+      { term: "Promoter", def: "Binding site for RNA Polymerase." },
+      { term: "Operator", def: "Binding site for repressor (prokaryotes)." },
+      { term: "TATA Box", def: "Conserved promoter sequence in eukaryotes." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "Structural Differences", 
+        details: [
+          "Eukaryotes: Have introns/exons, promoter (TATA), stop/start triplets. DNA wound around histones.",
+          "Prokaryotes: No introns, circular DNA, operons (clusters of genes), no histones."
+        ] 
+      }
+    ],
+    vceWebTricks: [
+      "Bacteria cannot splice human genes (cDNA must be used).",
+      "Promoter is upstream (5') of the coding region.",
+      "Stop codons do not code for amino acids."
+    ],
+    questions: [
+      { q: "Contrast prokaryotic and eukaryotic gene structure. [2 marks]", hint: "Prok: Operons/No introns; Euk: Introns/Exons." },
+      { q: "Function of the promoter? [1 mark]", hint: "RNA Polymerase binding site." },
+      { q: "What is an operon? [2 marks]", hint: "Cluster of genes regulated by a single promoter/operator." },
+      { q: "Define 'flanking regions'. [2 marks]", hint: "Upstream/downstream regions involved in regulation." },
+      { q: "Why are introns removed? [1 mark]", hint: "They are non-coding and would disrupt the protein sequence." }
+    ]
+  },
+  4: {
+    title: "Transcription & Processing",
+    aos: "Unit 3 AOS 1",
+    jacarandaDeepDive: "Chapter 3: mRNA synthesis.",
+    glossary: [
+      { term: "RNA Polymerase", def: "Enzyme that synthesises RNA from DNA." },
+      { term: "Template Strand", def: "Strand read by RNA Poly (3' to 5')." },
+      { term: "Coding Strand", def: "Strand identical to mRNA (except T/U)." },
+      { term: "Splicing", def: "Removal of introns." },
+      { term: "Alternative Splicing", def: "Mixing exons to create multiple proteins." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "The Process", 
+        details: [
+          "1. Initiation: RNA Poly binds promoter, unwinds DNA.",
+          "2. Elongation: RNA Poly adds RNA nucleotides (5' to 3') complementary to template.",
+          "3. Termination: Polymerase detaches at termination sequence.",
+          "Processing (Euk only): 5' Methyl-G Cap, 3' Poly-A Tail, Splicing (Spliceosomes)."
+        ] 
+      }
+    ],
+    vceWebTricks: [
+      "Processing occurs in the Nucleus.",
+      "Alternative splicing increases proteome diversity from a static genome.",
+      "Poly-A tail prevents degradation in cytosol."
+    ],
+    questions: [
+      { q: "List three post-transcriptional modifications. [3 marks]", hint: "5' Cap, 3' Poly-A tail, Splicing." },
+      { q: "Direction of mRNA synthesis? [1 mark]", hint: "5' to 3'." },
+      { q: "Explain alternative splicing. [2 marks]", hint: "Exons joined in different combos -> different proteins." },
+      { q: "Function of the 5' Cap? [2 marks]", hint: "Ribosome recognition and protection." },
+      { q: "Where does transcription occur? [1 mark]", hint: "Nucleus." }
+    ]
+  },
+  5: {
+    title: "Translation",
+    aos: "Unit 3 AOS 1",
+    jacarandaDeepDive: "Chapter 3: Protein synthesis.",
+    glossary: [
+      { term: "Codon", def: "Triplet on mRNA." },
+      { term: "Anticodon", def: "Triplet on tRNA." },
+      { term: "Degenerate", def: "Multiple codons code for one amino acid." },
+      { term: "Universal", def: "Code is same in all organisms." },
+      { term: "Polysome", def: "Multiple ribosomes reading one mRNA." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "Mechanism", 
+        details: [
+          "Initiation: Ribosome binds start codon (AUG).",
+          "Elongation: tRNA brings AA; Anticodon pairs with Codon; Peptide bond forms.",
+          "Termination: Stop codon reached; Release factor binds; Polypeptide released."
+        ] 
+      }
+    ],
+    vceWebTricks: [
+      "Use mRNA table for AAs, not tRNA.",
+      "Degeneracy buffers against silent mutations.",
+      "Ribosome acts as the enzyme (ribozyme)."
+    ],
+    questions: [
+      { q: "Define 'degenerate' code. [2 marks]", hint: "More codons than amino acids; redundancy." },
+      { q: "Role of tRNA in translation? [2 marks]", hint: "Carries AA to ribosome; matches anticodon to codon." },
+      { q: "What is a 'universal' code? [2 marks]", hint: "Same codons = same amino acids in all life." },
+      { q: "First amino acid in a chain? [1 mark]", hint: "Methionine (Met)." },
+      { q: "How is translation terminated? [2 marks]", hint: "Stop codon recruits release factor." }
+    ]
+  },
+  6: {
+    title: "Trp Operon: Repression",
+    aos: "Unit 3 AOS 1",
+    jacarandaDeepDive: "Chapter 4: Gene regulation.",
+    glossary: [
+      { term: "Repression", def: "Inhibiting transcription start." },
+      { term: "Co-repressor", def: "Molecule (Trp) that activates repressor." },
+      { term: "Constitutive", def: "Gene expressed continuously (e.g. trpR)." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "High Tryptophan", 
+        details: [
+          "Trp binds to Repressor protein (conformational change).",
+          "Active Repressor binds to Operator.",
+          "RNA Polymerase is blocked from Promoter.",
+          "Transcription is inhibited."
+        ] 
+      }
+    ],
+    vceWebTricks: [
+      "Operons save energy.",
+      "Regulatory gene is upstream and constitutive.",
+      "Repression prevents Initiation."
+    ],
+    questions: [
+      { q: "Explain the role of Tryptophan in repression. [2 marks]", hint: "Acts as co-repressor; activates repressor protein." },
+      { q: "What happens when Trp is low? [2 marks]", hint: "Repressor inactive; RNA Poly binds; Transcription occurs." },
+      { q: "Function of the Operator? [1 mark]", hint: "Binding site for Repressor." },
+      { q: "Why regulate gene expression? [1 mark]", hint: "Energy conservation." },
+      { q: "Is the repressor protein part of the operon? [1 mark]", hint: "No, coded by regulatory gene upstream." }
+    ]
+  },
+  7: {
+    title: "Trp Operon: Attenuation",
+    aos: "Unit 3 AOS 1",
+    jacarandaDeepDive: "Chapter 4: Advanced regulation.",
+    glossary: [
+      { term: "Attenuation", def: "Stopping transcription after it starts." },
+      { term: "Leader Sequence", def: "Region with Trp codons and domains 1-4." },
+      { term: "Terminator Loop", def: "3-4 hairpin structure." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "Mechanism", 
+        details: [
+          "Relies on coupled transcription/translation (Prokaryotes only).",
+          "High Trp: Ribosome moves fast over leader -> 3-4 loop forms -> RNA Poly falls off.",
+          "Low Trp: Ribosome stalls at Trp codons -> 2-3 loop forms -> Transcription continues."
+        ] 
+      }
+    ],
+    vceWebTricks: [
+      "Stalling ribosome = Anti-terminator (2-3).",
+      "Fast ribosome = Terminator (3-4).",
+      "Only in prokaryotes."
+    ],
+    questions: [
+      { q: "Why is attenuation impossible in eukaryotes? [2 marks]", hint: "Nucleus separates transcription and translation." },
+      { q: "Describe the events when Trp is high (Attenuation). [3 marks]", hint: "Ribosome fast -> 3-4 loop -> Termination." },
+      { q: "Role of the leader sequence? [2 marks]", hint: "Contains Trp codons to test cellular Trp levels." },
+      { q: "What is the 2-3 loop called? [1 mark]", hint: "Anti-terminator." },
+      { q: "Why does the ribosome stall? [1 mark]", hint: "Lack of charged tRNA-Trp." }
+    ]
+  },
+  8: {
+    title: "Protein Secretion",
+    aos: "Unit 3 AOS 1",
+    jacarandaDeepDive: "Chapter 4: Export pathway.",
+    glossary: [
+      { term: "Exocytosis", def: "Bulk transport out of cell." },
+      { term: "Vesicle", def: "Membrane sac for transport." },
+      { term: "Golgi", def: "Modifies and packages proteins." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "The Pathway", 
+        details: [
+          "Ribosome (Synthesis) -> Rough ER (Folding) -> Transport Vesicle -> Golgi (Modification/Sort) -> Secretory Vesicle -> Plasma Membrane (Fusion)."
+        ] 
+      }
+    ],
+    vceWebTricks: [
+      "Mitochondria provide ATP for vesicle movement.",
+      "Cytoskeleton provides tracks.",
+      "Membrane fluidity allows fusion."
+    ],
+    questions: [
+      { q: "Trace the path of an export protein. [4 marks]", hint: "Ribosome -> RER -> Golgi -> Vesicle -> Plasma Membrane." },
+      { q: "Role of Golgi Apparatus? [2 marks]", hint: "Modify, sort, package proteins." },
+      { q: "Energy source for exocytosis? [1 mark]", hint: "ATP." },
+      { q: "What occurs at the RER? [2 marks]", hint: "Translation and initial folding." },
+      { q: "How do vesicles move? [1 mark]", hint: "Motor proteins on cytoskeleton." }
+    ]
+  },
+  9: {
+    title: "Enzymes & Inhibition",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 5: Biocatalysts.",
+    glossary: [
+      { term: "Active Site", def: "Region complementary to substrate." },
+      { term: "Induced Fit", def: "Active site changes shape to bind substrate." },
+      { term: "Allosteric", def: "Site other than active site." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "Action", 
+        details: [
+          "Lowers Activation Energy (Ea).",
+          "Competitive: Binds active site (overcome by substrate).",
+          "Non-competitive: Binds allosteric site (cannot be overcome)."
+        ] 
+      }
+    ],
+    vceWebTricks: [
+      "Enzymes don't change Delta G (yield).",
+      "Denaturation is irreversible; Cold is reversible."
+    ],
+    questions: [
+      { q: "Explain 'induced fit'. [2 marks]", hint: "Active site molds around substrate." },
+      { q: "Contrast competitive/non-competitive. [3 marks]", hint: "Active vs Allosteric site; overcoming inhibition." },
+      { q: "Effect of heat on enzymes? [2 marks]", hint: "High KE -> Denaturation (bond breakage)." },
+      { q: "Define Activation Energy. [1 mark]", hint: "Energy needed to start reaction." },
+      { q: "What is saturation? [1 mark]", hint: "All active sites occupied." }
+    ]
+  },
+  10: {
+    title: "Coenzymes & Cycling",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 5.2: ATP/NAD/NADP.",
+    glossary: [
+      { term: "Coenzyme", def: "Organic carrier of energy/protons." },
+      { term: "Loaded", def: "Carrying energy (ATP, NADH)." },
+      { term: "Unloaded", def: "Empty (ADP, NAD+)." }
+    ],
+    keyKnowledge: [
+      { 
+        subhead: "Cycling", 
+        details: [
+          "ATP <-> ADP + Pi (Energy).",
+          "NAD+ <-> NADH (Respiration electrons).",
+          "NADP+ <-> NADPH (Photosynthesis electrons)."
+        ] 
+      }
+    ],
+    vceWebTricks: [
+      "NADPH has a P for Photosynthesis.",
+      "Coenzymes are recycled, not consumed."
+    ],
+    questions: [
+      { q: "Distinguish between NAD+ and NADH. [2 marks]", hint: "Unloaded vs Loaded electron carrier." },
+      { q: "Role of coenzymes? [1 mark]", hint: "Assist enzymes by carrying groups/energy." },
+      { q: "Which coenzyme is used in chloroplasts? [1 mark]", hint: "NADP+." },
+      { q: "How is ATP regenerated? [2 marks]", hint: "Phosphorylation of ADP (ADP+Pi)." },
+      { q: "Is ATP hydrolysis anabolic or catabolic? [1 mark]", hint: "Catabolic (releases energy)." }
+    ]
+  },
+  11: {
+    title: "Photosynthesis: Light Dependent",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 6: Thylakoid reactions.",
+    glossary: [
+      { term: "Photolysis", def: "Splitting water with light." },
+      { term: "Thylakoid", def: "Membrane site of LD stage." }
+    ],
+    keyKnowledge: [
+      { subhead: "Inputs/Outputs", details: ["In: H2O, ADP+Pi, NADP+. Out: O2, ATP, NADPH."] },
+      { subhead: "Process", details: ["Light excites chlorophyll electrons -> ETC -> H+ gradient -> ATP."] }
+    ],
+    vceWebTricks: ["O2 comes from water.", "ATP/NADPH go to stroma."],
+    questions: [
+      { q: "Location of LD stage? [1 mark]", hint: "Grana/Thylakoids." },
+      { q: "Define photolysis. [2 marks]", hint: "Light splitting water into H+, e-, O2." },
+      { q: "Role of NADPH? [1 mark]", hint: "Carry H+/electrons to Calvin Cycle." },
+      { q: "Outputs of this stage? [3 marks]", hint: "O2, ATP, NADPH." },
+      { q: "What happens to the O2? [1 mark]", hint: "Released via stomata." }
+    ]
+  },
+  12: {
+    title: "Photosynthesis: Light Independent",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 6: Calvin Cycle.",
+    glossary: [
+      { term: "Stroma", def: "Site of Calvin Cycle." },
+      { term: "Carbon Fixation", def: "Inorganic CO2 to organic molecule." },
+      { term: "Rubisco", def: "Enzyme fixing CO2." }
+    ],
+    keyKnowledge: [
+      { subhead: "Inputs/Outputs", details: ["In: CO2, ATP, NADPH. Out: Glucose, ADP, NADP+."] }
+    ],
+    vceWebTricks: ["Stops in dark due to lack of ATP/NADPH."],
+    questions: [
+      { q: "Role of Rubisco? [2 marks]", hint: "Catalyses fixation of CO2 to RuBP." },
+      { q: "Inputs required from LD stage? [2 marks]", hint: "ATP, NADPH." },
+      { q: "Location of Calvin Cycle? [1 mark]", hint: "Stroma." },
+      { q: "Final product? [1 mark]", hint: "Glucose (C6H12O6)." },
+      { q: "Why is it called 'Carbon Fixation'? [2 marks]", hint: "Converting gas (CO2) to solid/organic form." }
+    ]
+  },
+  13: {
+    title: "C3, C4, CAM Adaptations",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 7: Photorespiration.",
+    glossary: [
+      { term: "Photorespiration", def: "Rubisco binds O2 instead of CO2." },
+      { term: "PEP Carboxylase", def: "Enzyme with no O2 affinity." }
+    ],
+    keyKnowledge: [
+      { subhead: "Strategies", details: ["C4: Spatial (Bundle Sheath). CAM: Temporal (Night)."] }
+    ],
+    vceWebTricks: ["C4 = Space (Corn); CAM = Time (Cactus)."],
+    questions: [
+      { q: "Why is photorespiration bad? [2 marks]", hint: "Wastes ATP, produces no glucose." },
+      { q: "How do C4 plants avoid it? [2 marks]", hint: "Move CO2 to bundle sheath cells." },
+      { q: "How do CAM plants save water? [2 marks]", hint: "Open stomata only at night." },
+      { q: "Role of PEP Carboxylase? [1 mark]", hint: "Initial fixation (ignores O2)." },
+      { q: "Environment for CAM plants? [1 mark]", hint: "Hot/Arid." }
+    ]
+  },
+  14: {
+    title: "Factors of Photosynthesis",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 8: Rate limits.",
+    glossary: [
+      { term: "Limiting Factor", def: "Scarce resource restricting rate." },
+      { term: "Saturation Point", def: "Max rate plateau." }
+    ],
+    keyKnowledge: [
+      { subhead: "Factors", details: ["Light (LD stage), CO2 (Calvin), Temp (Enzymes)."] }
+    ],
+    vceWebTricks: ["High temp denatures Rubisco.", "Plateau means another factor is limiting."],
+    questions: [
+      { q: "Effect of temp on rate? [3 marks]", hint: "Increase KE -> Optimum -> Denaturation." },
+      { q: "Why does rate plateau with high light? [2 marks]", hint: "CO2 or Temp becomes limiting." },
+      { q: "Role of water availability? [2 marks]", hint: "Stomata close -> CO2 drops." },
+      { q: "Define limiting factor. [1 mark]", hint: "Factor in shortest supply." },
+      { q: "Greenhouse strategy? [1 mark]", hint: "Increase CO2/Temp artificially." }
+    ]
+  },
+  15: {
+    title: "Glycolysis",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 9: Glucose breakdown.",
+    glossary: [
+      { term: "Glycolysis", def: "Glucose -> 2 Pyruvate." },
+      { term: "Cytosol", def: "Site of reaction." }
+    ],
+    keyKnowledge: [
+      { subhead: "Details", details: ["In: Glucose, 2ADP, 2NAD+. Out: 2 Pyruvate, 2 ATP, 2 NADH."] }
+    ],
+    vceWebTricks: ["Anaerobic.", "Occurs in ALL cells."],
+    questions: [
+      { q: "Where does glycolysis occur? [1 mark]", hint: "Cytosol." },
+      { q: "Net ATP yield? [1 mark]", hint: "2 ATP." },
+      { q: "Is Oxygen used? [1 mark]", hint: "No." },
+      { q: "End product carbon count? [1 mark]", hint: "Pyruvate (3 carbons)." },
+      { q: "Fate of NADH? [1 mark]", hint: "Goes to ETC (aerobic) or Fermentation." }
+    ]
+  },
+  16: {
+    title: "Mitochondrial Respiration",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 10: Krebs & ETC.",
+    glossary: [
+      { term: "Matrix", def: "Krebs site." },
+      { term: "Cristae", def: "ETC site." }
+    ],
+    keyKnowledge: [
+      { subhead: "Yields", details: ["Krebs: 2 ATP, CO2, NADH/FADH2. ETC: 26-28 ATP, H2O."] }
+    ],
+    vceWebTricks: ["O2 is final electron acceptor.", "Total yield ~30-32 ATP."],
+    questions: [
+      { q: "Role of O2 in respiration? [2 marks]", hint: "Accepts electrons/H+ to form water." },
+      { q: "Location of ETC? [1 mark]", hint: "Inner membrane (Cristae)." },
+      { q: "Inputs of Krebs? [2 marks]", hint: "Acetyl-CoA, NAD+, FAD, ADP." },
+      { q: "Total ATP yield? [1 mark]", hint: "30 or 32." },
+      { q: "Purpose of NADH/FADH2? [2 marks]", hint: "Carry electrons to ETC." }
+    ]
+  },
+  17: {
+    title: "Anaerobic Fermentation",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 11: No Oxygen.",
+    glossary: [
+      { term: "Lactic Acid", def: "Animal product." },
+      { term: "Ethanol", def: "Yeast product." }
+    ],
+    keyKnowledge: [
+      { subhead: "Goal", details: ["Recycle NAD+ to keep glycolysis going."] }
+    ],
+    vceWebTricks: ["Produces NO extra ATP."],
+    questions: [
+      { q: "Purpose of fermentation? [2 marks]", hint: "Regenerate NAD+." },
+      { q: "Products in yeast? [2 marks]", hint: "Ethanol and CO2." },
+      { q: "Products in animals? [1 mark]", hint: "Lactic Acid." },
+      { q: "Site of fermentation? [1 mark]", hint: "Cytosol." },
+      { q: "Comparison of ATP yield to aerobic? [2 marks]", hint: "2 vs 30-32 (Much less)." }
+    ]
+  },
+  18: {
+    title: "Biofuels",
+    aos: "Unit 3 AOS 2",
+    jacarandaDeepDive: "Chapter 12: Biomass energy.",
+    glossary: [
+      { term: "Bioethanol", def: "Fuel from fermentation." },
+      { term: "Carbon Neutral", def: "Net zero carbon release." }
+    ],
+    keyKnowledge: [
+      { subhead: "Production", details: ["Deconstruction -> Enzymatic Digestion -> Fermentation -> Purification."] }
+    ],
+    vceWebTricks: ["CO2 released was recently absorbed (short cycle)."],
+    questions: [
+      { q: "Define carbon neutral. [2 marks]", hint: "CO2 emitted = CO2 absorbed during growth." },
+      { q: "Steps to make bioethanol? [3 marks]", hint: "Breakdown, Hydrolysis, Fermentation, Distillation." },
+      { q: "Role of yeast? [1 mark]", hint: "Anaerobic fermentation." },
+      { q: "One advantage? [1 mark]", hint: "Renewable / Reduced fossil fuel use." },
+      { q: "One disadvantage? [1 mark]", hint: "Food vs Fuel land use." }
+    ]
+  },
+  19: {
+    title: "Pathogens & Antigens",
+    aos: "Unit 4 AOS 1",
+    jacarandaDeepDive: "Chapter 12: Disease agents.",
+    glossary: [
+      { term: "Pathogen", def: "Disease causing agent." },
+      { term: "Antigen", def: "Immune trigger." },
+      { term: "Prion", def: "Misfolded protein." }
+    ],
+    keyKnowledge: [
+      { subhead: "Types", details: ["Cellular: Bacteria, Fungi, Protist. Non-Cellular: Virus, Prion."] }
+    ],
+    vceWebTricks: ["Prions have NO genetic material.", "Allergens are non-pathogenic antigens."],
+    questions: [
+      { q: "Difference between bacteria and virus? [2 marks]", hint: "Living/Cellular vs Non-living/Protein coat+DNA." },
+      { q: "How do prions cause disease? [2 marks]", hint: "Induce misfolding in normal proteins." },
+      { q: "Define antigen. [1 mark]", hint: "Marker triggering immune response." },
+      { q: "Self vs Non-Self? [2 marks]", hint: "MHC markers identify self." },
+      { q: "Example of a cellular pathogen? [1 mark]", hint: "Bacteria / Fungi." }
+    ]
+  },
+  20: {
+    title: "1st Line: Barriers",
+    aos: "Unit 4 AOS 1",
+    jacarandaDeepDive: "Chapter 13: Prevention.",
+    glossary: [
+      { term: "Microbiota", def: "Good bacteria." },
+      { term: "Lysozyme", def: "Antibacterial enzyme." }
+    ],
+    keyKnowledge: [
+      { subhead: "Categories", details: ["Physical: Skin, Mucus. Chemical: Acid, Lysozyme. Biological: Flora."] }
+    ],
+    vceWebTricks: ["Intact skin is physical.", "Flora competes for space."],
+    questions: [
+      { q: "Physical barrier in plants? [1 mark]", hint: "Waxy cuticle / Bark." },
+      { q: "Chemical barrier in humans? [1 mark]", hint: "Stomach acid / Tears." },
+      { q: "How does microbiota protect? [2 marks]", hint: "Competition for resources." },
+      { q: "Role of mucus? [1 mark]", hint: "Traps pathogens." },
+      { q: "Is this specific or non-specific? [1 mark]", hint: "Non-specific." }
+    ]
+  },
+  21: {
+    title: "2nd Line: Innate Cells",
+    aos: "Unit 4 AOS 1",
+    jacarandaDeepDive: "Chapter 14: Phagocytes.",
+    glossary: [
+      { term: "Macrophage", def: "APC Phagocyte." },
+      { term: "Neutrophil", def: "First responder phagocyte." },
+      { term: "Complement", def: "Lysis/Opsonisation proteins." }
+    ],
+    keyKnowledge: [
+      { subhead: "Cells", details: ["Phagocytes engulf. NK cells induce apoptosis in viral/cancer cells."] }
+    ],
+    vceWebTricks: ["Innate = No memory.", "NK cells check for MHC I."],
+    questions: [
+      { q: "Define phagocytosis. [2 marks]", hint: "Engulf and digest pathogen." },
+      { q: "Role of NK cells? [2 marks]", hint: "Kill infected self-cells via apoptosis." },
+      { q: "Three functions of complement? [3 marks]", hint: "Lysis, Opsonisation, Chemotaxis." },
+      { q: "Role of Interferon? [2 marks]", hint: "Viral warning signal to neighbours." },
+      { q: "Difference between Macrophage and Neutrophil? [2 marks]", hint: "APC vs Non-APC." }
+    ]
+  },
+  22: {
+    title: "Inflammation",
+    aos: "Unit 4 AOS 1",
+    jacarandaDeepDive: "Chapter 14.2: Response to injury.",
+    glossary: [
+      { term: "Histamine", def: "Vasodilator chemical." },
+      { term: "Mast Cell", def: "Releases histamine." }
+    ],
+    keyKnowledge: [
+      { subhead: "Steps", details: ["Injury -> Histamine -> Vasodilation/Permeability -> Phagocytes arrive."] }
+    ],
+    vceWebTricks: ["Histamine causes Swelling AND Redness."],
+    questions: [
+      { q: "Source of histamine? [1 mark]", hint: "Mast cells." },
+      { q: "Two effects of histamine? [2 marks]", hint: "Vasodilation and Permeability." },
+      { q: "Why swelling occurs? [2 marks]", hint: "Fluid leaking from permeable capillaries." },
+      { q: "Purpose of inflammation? [2 marks]", hint: "Trap pathogen and bring immune cells." },
+      { q: "Is this specific? [1 mark]", hint: "No." }
+    ]
+  },
+  23: {
+    title: "3rd Line: Humoral (B Cells)",
+    aos: "Unit 4 AOS 1",
+    jacarandaDeepDive: "Chapter 15: Antibody response.",
+    glossary: [
+      { term: "Clonal Selection", def: "Antigen selects specific B cell." },
+      { term: "Plasma Cell", def: "Antibody factory." }
+    ],
+    keyKnowledge: [
+      { subhead: "Process", details: ["Selection -> T-Helper Activation -> Expansion -> Plasma/Memory cells."] }
+    ],
+    vceWebTricks: ["Targets extracellular pathogens.", "Antibodies neutralize/agglutinate."],
+    questions: [
+      { q: "Role of T-Helper cell? [2 marks]", hint: "Secrete cytokines to activate B cells." },
+      { q: "What do Plasma cells do? [1 mark]", hint: "Secrete antibodies." },
+      { q: "Function of Memory B cells? [2 marks]", hint: "Rapid response on re-exposure." },
+      { q: "Describe Clonal Selection. [2 marks]", hint: "Matching antigen binds B cell receptor." },
+      { q: "Antibody quaternary structure? [1 mark]", hint: "4 chains (2 heavy, 2 light)." }
+    ]
+  },
+  24: {
+    title: "3rd Line: Cell-Mediated (T Cells)",
+    aos: "Unit 4 AOS 1",
+    jacarandaDeepDive: "Chapter 15.2: T Cell response.",
+    glossary: [
+      { term: "Cytotoxic T Cell", def: "Kills infected cells." },
+      { term: "MHC I", def: "Marker on infected cells." }
+    ],
+    keyKnowledge: [
+      { subhead: "Process", details: ["APC to lymph node -> Select T cell -> Tc cell kills infected cells (Perforin/Apoptosis)."] }
+    ],
+    vceWebTricks: ["Targets Intracellular pathogens.", "Tc cells check MHC I."],
+    questions: [
+      { q: "How do Tc cells kill? [2 marks]", hint: "Induce apoptosis (perforin/granzymes)." },
+      { q: "What does MHC II do? [2 marks]", hint: "Presents antigen to T-Helper cells." },
+      { q: "Target of Cell-Mediated immunity? [1 mark]", hint: "Viruses inside cells / Cancer." },
+      { q: "Where do T cells mature? [1 mark]", hint: "Thymus." },
+      { q: "Role of Dendritic Cells? [2 marks]", hint: "APC; transport antigen to lymph node." }
+    ]
+  },
+  25: {
+    title: "Lymphatic System",
+    aos: "Unit 4 AOS 1",
+    jacarandaDeepDive: "Chapter 16: Surveillance.",
+    glossary: [
+      { term: "Lymph Node", def: "Site of clonal selection." },
+      { term: "Primary Tissue", def: "Production/Maturation (Bone Marrow/Thymus)." }
+    ],
+    keyKnowledge: [
+      { subhead: "Role", details: ["Transport APCs to lymphocytes.", "Fluid drainage."] }
+    ],
+    vceWebTricks: ["Swollen nodes = clonal expansion."],
+    questions: [
+      { q: "Distinguish primary/secondary tissue. [2 marks]", hint: "Maturation vs Activation." },
+      { q: "Role of valves in lymph vessels? [1 mark]", hint: "Prevent backflow." },
+      { q: "Why do nodes swell? [1 mark]", hint: "Cell division (B/T cells)." },
+      { q: "Where is lymph drained to? [1 mark]", hint: "Circulatory system (veins)." },
+      { q: "Function of spleen? [1 mark]", hint: "Filter blood." }
+    ]
+  },
+  26: {
+    title: "Immunity Types & Vaccines",
+    aos: "Unit 4 AOS 1",
+    jacarandaDeepDive: "Chapter 17: Acquired immunity.",
+    glossary: [
+      { term: "Active", def: "Body makes antibodies/memory." },
+      { term: "Passive", def: "Given antibodies (no memory)." }
+    ],
+    keyKnowledge: [
+      { subhead: "Vaccines", details: ["Artifical Active.", "Herd immunity protects vulnerable."] }
+    ],
+    vceWebTricks: ["Passive is immediate but short term."],
+    questions: [
+      { q: "Contrast Active and Passive. [3 marks]", hint: "Source of Ab, Memory produced, Duration." },
+      { q: "Define Herd Immunity. [2 marks]", hint: "High % immune protects non-immune." },
+      { q: "Is breastfeeding natural or artificial? [1 mark]", hint: "Natural Passive." },
+      { q: "Why use a booster shot? [2 marks]", hint: "Increase memory cell numbers." },
+      { q: "Component of a vaccine? [1 mark]", hint: "Attenuated/dead pathogen or antigen." }
+    ]
+  },
+  27: {
+    title: "Monoclonal Antibodies",
+    aos: "Unit 4 AOS 1",
+    jacarandaDeepDive: "Chapter 18: Immunotherapy.",
+    glossary: [
+      { term: "Hybridoma", def: "B-cell fused with tumour cell." },
+      { term: "mAbs", def: "Cloned antibodies for one antigen." }
+    ],
+    keyKnowledge: [
+      { subhead: "Cancer", details: ["Flagging for immune system, Delivering toxins, Blocking growth signals."] }
+    ],
+    vceWebTricks: ["Specific to ONE antigen.", "Artificial Passive treatment."],
+    questions: [
+      { q: "How are hybridomas made? [2 marks]", hint: "Fuse B-cell with Myeloma." },
+      { q: "Mechanism against cancer? [2 marks]", hint: "Flagging or Blocking receptors." },
+      { q: "Why use mAbs? [1 mark]", hint: "Highly specific / less side effects than chemo." },
+      { q: "Can they treat autoimmune disease? [1 mark]", hint: "Yes, by targeting cytokines." },
+      { q: "Why 'monoclonal'? [1 mark]", hint: "From a single B-cell clone." }
+    ]
+  },
+  28: {
+    title: "Evolution: Gene Pools",
+    aos: "Unit 4 AOS 2",
+    jacarandaDeepDive: "Chapter 19: Population genetics.",
+    glossary: [
+      { term: "Gene Pool", def: "Sum of alleles in population." },
+      { term: "Drift", def: "Random change (Bottleneck/Founder)." }
+    ],
+    keyKnowledge: [
+      { subhead: "Mechanisms", details: ["Mutation (Source), Selection (Adaptive), Drift (Random), Flow (Migration)."] }
+    ],
+    vceWebTricks: ["Drift affects small populations most.", "Selection acts on phenotype."],
+    questions: [
+      { q: "Define Natural Selection steps. [4 marks]", hint: "Variation, Pressure, Survival, Inheritance." },
+      { q: "Contrast Founder and Bottleneck. [2 marks]", hint: "Migration vs Disaster." },
+      { q: "Effect of gene flow? [1 mark]", hint: "Increases diversity / Homogenises populations." },
+      { q: "Source of new alleles? [1 mark]", hint: "Mutation." },
+      { q: "What is biological fitness? [1 mark]", hint: "Ability to survive and reproduce." }
+    ]
+  },
+  29: {
+    title: "Speciation",
+    aos: "Unit 4 AOS 2",
+    jacarandaDeepDive: "Chapter 20: New species.",
+    glossary: [
+      { term: "Allopatric", def: "Geographic barrier." },
+      { term: "Sympatric", def: "No barrier (e.g. Howea palms)." }
+    ],
+    keyKnowledge: [
+      { subhead: "Allopatric Steps", details: ["Barrier -> Isolation -> Selection/Drift -> Reproductive Isolation."] }
+    ],
+    vceWebTricks: ["Must mention 'No Gene Flow'.", "Reproductive isolation is the endpoint."],
+    questions: [
+      { q: "Define species. [2 marks]", hint: "Interbreed to produce fertile offspring." },
+      { q: "Steps of Allopatric speciation? [4 marks]", hint: "Barrier, No Flow, Divergence, Isolation." },
+      { q: "Example of Sympatric? [1 mark]", hint: "Lord Howe Island Palms." },
+      { q: "Role of isolation? [1 mark]", hint: "Prevent gene flow." },
+      { q: "What is a selection pressure? [1 mark]", hint: "Factor influencing survival." }
+    ]
+  },
+  30: {
+    title: "Fossils & Dating",
+    aos: "Unit 4 AOS 2",
+    jacarandaDeepDive: "Chapter 21: History of life.",
+    glossary: [
+      { term: "Index Fossil", def: "Widespread, short-lived." },
+      { term: "Half-life", def: "Time for 50% decay." }
+    ],
+    keyKnowledge: [
+      { subhead: "Dating", details: ["Relative: Stratigraphy. Absolute: Radiometric (C-14, K-Ar)."] }
+    ],
+    vceWebTricks: ["C-14 < 50k years.", "Sedimentary rock only."],
+    questions: [
+      { q: "Conditions for fossilisation? [3 marks]", hint: "Rapid burial, no O2, pressure." },
+      { q: "What is an index fossil? [2 marks]", hint: "Widespread, short geological time." },
+      { q: "Limit of Carbon dating? [1 mark]", hint: "50,000 years." },
+      { q: "Define transitional fossil. [2 marks]", hint: "Traits of ancestral and descendant groups." },
+      { q: "Relative vs Absolute? [2 marks]", hint: "Order vs Age in years." }
+    ]
+  },
+  31: {
+    title: "Human Evolution",
+    aos: "Unit 4 AOS 2",
+    jacarandaDeepDive: "Chapter 22: Hominins.",
+    glossary: [
+      { term: "Hominin", def: "Bipedal humans/ancestors." },
+      { term: "Foramen Magnum", def: "Spine entry point." }
+    ],
+    keyKnowledge: [
+      { subhead: "Trends", details: ["Bipedalism (Bowl pelvis, S-spine, Central foramen magnum). Brain increase. Face flattening."] }
+    ],
+    vceWebTricks: ["Humans did not evolve from chimps; we share an ancestor.", "Cultural evolution is faster."],
+    questions: [
+      { q: "Define Hominin. [1 mark]", hint: "Bipedal ape." },
+      { q: "Two skeletal signs of bipedalism? [2 marks]", hint: "Bowl pelvis, Valgus angle." },
+      { q: "Trend in brain size? [1 mark]", hint: "Increased." },
+      { q: "Out of Africa theory? [2 marks]", hint: "Evolved in Africa, migrated out." },
+      { q: "Evidence for Out of Africa? [1 mark]", hint: "mtDNA diversity highest in Africa." }
+    ]
+  },
+  32: {
+    title: "Investigation & Ethics",
+    aos: "Unit 4 AOS 3",
+    jacarandaDeepDive: "Chapter 23: Science skills.",
+    glossary: [
+      { term: "Precision", def: "Consistency of results." },
+      { term: "Accuracy", def: "Closeness to true value." }
+    ],
+    keyKnowledge: [
+      { subhead: "Design", details: ["IV/DV/CV. Systematic vs Random Error."] },
+      { subhead: "Ethics", details: ["Integrity, Justice, Beneficence, Non-maleficence, Respect."] }
+    ],
+    vceWebTricks: ["Repeat for reliability.", "Calibrate for accuracy."],
+    questions: [
+      { q: "Difference: Precision vs Accuracy. [2 marks]", hint: "Consistency vs Truth." },
+      { q: "Define Validity. [1 mark]", hint: "Measuring what you intend to." },
+      { q: "Role of control group? [1 mark]", hint: "Baseline comparison." },
+      { q: "Random vs Systematic error? [2 marks]", hint: "Chance vs Equipment fault." },
+      { q: "Define Non-maleficence. [1 mark]", hint: "Do no harm." }
+    ]
+  }
+};
+
+export default function App() {
+  const [current, setCurrent] = useState(1);
+  const [activeTab, setActiveTab] = useState('knowledge');
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [search, setSearch] = useState("");
+
+  const session = SESSIONS_DATA[current] || SESSIONS_DATA[1];
+
+  const filtered = useMemo(() => {
+    return Object.entries(SESSIONS_DATA).filter(([num, data]) => 
+      data.title.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search]);
+
+  return (
+    <div className="flex h-screen bg-[#020203] text-slate-100 overflow-hidden font-sans selection:bg-indigo-500/30">
+      
+      {/* SIDEBAR */}
+      <aside className={`${sidebarOpen ? 'w-80' : 'w-0'} bg-[#08080a] border-r border-white/5 transition-all duration-300 flex flex-col overflow-hidden shadow-2xl z-20`}>
+        <div className="p-6 border-b border-white/5 bg-indigo-600/5">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-indigo-500 p-1.5 rounded-lg shadow-lg shadow-indigo-500/20">
+              <GraduationCap className="text-white w-5 h-5" />
+            </div>
+            <h2 className="font-bold text-sm tracking-widest text-indigo-100 uppercase">VCE Bio Master</h2>
+          </div>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <input 
+              type="text" 
+              placeholder="Search 32 modules..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 text-[11px] focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 outline-none transition-all placeholder:text-slate-600"
+            />
+          </div>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-4 space-y-1.5 custom-scrollbar">
+          {filtered.map(([num, data]) => (
+            <button
+              key={num}
+              onClick={() => {setCurrent(parseInt(num)); setActiveTab('knowledge');}}
+              className={`w-full text-left px-4 py-3.5 rounded-xl transition-all flex items-center gap-4 group ${
+                current === parseInt(num) 
+                  ? 'bg-indigo-600/10 border border-indigo-500/20 text-white shadow-xl shadow-indigo-500/5' 
+                  : 'text-slate-500 hover:bg-white/5 hover:text-slate-300 border border-transparent'
+              }`}
+            >
+              <span className={`text-[10px] font-black w-7 h-7 flex items-center justify-center rounded-lg transition-colors ${current === parseInt(num) ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30' : 'bg-white/5 group-hover:bg-white/10'}`}>{num}</span>
+              <div className="flex flex-col overflow-hidden">
+                <span className="text-[11px] font-bold truncate leading-tight">{data.title}</span>
+                <span className="text-[9px] opacity-50 font-medium uppercase">{data.aos}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </aside>
+
+      {/* MAIN CONTENT */}
+      <main className="flex-1 flex flex-col min-w-0 bg-[radial-gradient(circle_at_top_right,#0c0c20,transparent)] overflow-hidden">
+        
+        <header className="h-16 border-b border-white/5 px-8 flex items-center justify-between bg-[#030305]/80 backdrop-blur-xl sticky top-0 z-10">
+          <div className="flex items-center gap-6">
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-white/5 rounded-xl text-slate-400 transition-colors">
+              <Layers className="w-5 h-5" />
+            </button>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{session.aos}</span>
+                <span className="w-1 h-1 rounded-full bg-white/10" />
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Module {current}</span>
+              </div>
+              <h3 className="text-xs font-bold text-slate-300">High-Density Study Program</h3>
+            </div>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex flex-col items-end">
+              <span className="text-[9px] font-black text-slate-600 uppercase tracking-tighter">Study Progress</span>
+              <div className="flex items-center gap-3">
+                <div className="h-1.5 w-32 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-full bg-indigo-500 shadow-[0_0_8px_#6366f1]" style={{ width: `${(current/32)*100}%` }} />
+                </div>
+                <span className="text-[10px] font-black text-slate-400">{Math.round((current/32)*100)}%</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <button onClick={() => setCurrent(c => Math.max(1, c-1))} className="p-2 hover:bg-white/5 rounded-xl transition-all disabled:opacity-20" disabled={current===1}><ChevronLeft className="w-5 h-5" /></button>
+              <button onClick={() => setCurrent(c => Math.min(32, c+1))} className="p-2 hover:bg-white/5 rounded-xl transition-all disabled:opacity-20" disabled={current===32}><ChevronRight className="w-5 h-5" /></button>
+            </div>
+          </div>
+        </header>
+
+        <nav className="flex px-10 pt-6 gap-10 border-b border-white/5 bg-[#030305]/40 shrink-0">
+          {[
+            { id: 'knowledge', label: 'Core Knowledge', icon: Microscope },
+            { id: 'glossary', label: 'Tech Glossary', icon: BookOpen },
+            { id: 'tricks', label: 'Exam Blueprints', icon: Zap },
+            { id: 'questions', label: 'Assessments (5)', icon: ClipboardList }
+          ].map(t => (
+            <button 
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`pb-4 flex items-center gap-2.5 text-[10px] font-black uppercase tracking-[0.15em] transition-all relative ${activeTab === t.id ? 'text-indigo-400' : 'text-slate-500 hover:text-slate-300'}`}
+            >
+              <t.icon className={`w-3.5 h-3.5 ${activeTab === t.id ? 'animate-pulse' : ''}`} />
+              {t.label}
+              {activeTab === t.id && (
+                <div className="absolute bottom-0 left-[-10%] w-[120%] h-[3px] bg-indigo-500 rounded-t-full shadow-[0_-2px_10px_#6366f1]" />
+              )}
+            </button>
+          ))}
+        </nav>
+
+        <div className="flex-1 overflow-y-auto p-12 custom-scrollbar scroll-smooth">
+          <div className="max-w-4xl mx-auto animate-in">
+            
+            <div className="mb-14">
+               <div className="flex items-center gap-3 mb-4">
+                  <div className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[9px] font-black uppercase tracking-widest">Active Study Module</div>
+                  <div className="text-[9px] font-bold text-slate-600 italic">{session.jacarandaDeepDive}</div>
+               </div>
+               <h1 className="text-5xl font-black mb-4 tracking-tighter text-white bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60 leading-tight">{session.title}</h1>
+            </div>
+
+            {activeTab === 'knowledge' && (
+              <div className="space-y-16">
+                {session.keyKnowledge.map((k, i) => (
+                  <div key={i} className="space-y-8">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-black italic shadow-lg shadow-indigo-500/5">
+                        {i + 1}
+                      </div>
+                      <h3 className="text-white text-lg font-black uppercase tracking-tight">
+                        {k.subhead}
+                      </h3>
+                    </div>
+                    <div className="grid gap-5">
+                      {k.details.map((d, di) => (
+                        <div key={di} className="group p-8 bg-white/[0.02] border border-white/5 rounded-3xl text-[16px] leading-[1.7] text-slate-300 hover:bg-white/[0.04] hover:border-indigo-500/20 transition-all duration-300">
+                          <p className="flex gap-4">
+                            <span className="text-indigo-500/40 mt-1.5 shrink-0">•</span>
+                            {d}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === 'glossary' && (
+              <div className="grid gap-4">
+                {session.glossary.map((g, i) => (
+                  <div key={i} className="group p-6 bg-white/[0.02] border border-white/5 rounded-2xl flex items-start gap-8 hover:bg-white/[0.04] transition-all">
+                    <div className="w-48 text-indigo-400 font-black text-[11px] uppercase tracking-wider pt-1 flex items-center gap-2 shrink-0">
+                       <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 group-hover:scale-125 transition-transform" />
+                       {g.term}
+                    </div>
+                    <div className="flex-1 text-slate-400 text-sm leading-relaxed font-medium">{g.def}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === 'tricks' && (
+              <div className="space-y-6">
+                <div className="p-6 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-4 mb-8">
+                  <Info className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                  <p className="text-[11px] font-bold text-amber-200/70 uppercase leading-relaxed tracking-wide">Chief Examiner Tip: These blueprints address frequent Section B marks.</p>
+                </div>
+                {session.vceWebTricks.map((t, i) => (
+                  <div key={i} className="p-8 bg-indigo-500/[0.03] border border-indigo-500/10 rounded-3xl flex items-center gap-6 group hover:border-indigo-500/30 transition-all">
+                    <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0 shadow-inner">
+                      <Zap className="w-5 h-5 fill-indigo-500/20" />
+                    </div>
+                    <p className="text-lg font-bold text-slate-100/90 tracking-tight italic leading-snug">"{t}"</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === 'questions' && (
+              <div className="space-y-8">
+                <div className="flex items-center gap-2 mb-4">
+                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                   <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Module Proficiency Check</h2>
+                </div>
+                {session.questions.map((q, i) => (
+                  <div key={i} className="p-10 bg-[#08080a] border border-white/5 rounded-3xl space-y-6 group hover:border-indigo-500/20 transition-all relative overflow-hidden shadow-2xl">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                       <span className="text-4xl font-black italic">{i+1}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[9px] font-black text-indigo-400 uppercase">Assessment</span>
+                    </div>
+                    <p className="text-2xl font-black text-white leading-[1.2] tracking-tight pr-12">{q.q}</p>
+                    <div className="pt-6 border-t border-white/5 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all flex flex-col gap-3">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="text-emerald-500 w-4 h-4" />
+                        <span className="text-[10px] font-black text-emerald-500 uppercase">Exam Logic Hint</span>
+                      </div>
+                      <p className="text-slate-400 text-sm font-medium italic leading-relaxed">"{q.hint}"</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="h-40" />
+          </div>
+        </div>
+
+        <footer className="h-12 border-t border-white/5 bg-[#030305] flex items-center px-8 justify-between text-[9px] font-black text-slate-600 tracking-[0.2em] uppercase shrink-0">
+          <div className="flex gap-8">
+             <span className="text-emerald-500/80 flex items-center gap-2">
+               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]" /> 
+               V16.0.0 Global Deep-Dive Population Complete
+             </span>
+          </div>
+          <div className="flex gap-8 items-center">
+            <span className="text-indigo-400">Jacaranda Master Database: 32 / 32</span>
+          </div>
+        </footer>
+
+      </main>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e1b4b; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #312e81; }
+      `}} />
+    </div>
+  );
+}
